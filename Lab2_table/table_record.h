@@ -1,12 +1,15 @@
 #ifndef TABLE_RECORD_H
 #define TABLE_RECORD_H
-template <class key, class value>
+template <class Key, class Value>
 class table_element {
 public:
 	table_element() = default;
-private:
-	key m_key;
-	value m_value;
+	table_element(Key key, Value value);
+	Key m_key;
+	Value m_value;
 };
+
+template <class Key, class Value>
+table_element<Key, Value>::table_element(Key key, Value value) : m_key(key), m_value(value) { }
 #endif
 
