@@ -29,7 +29,7 @@ table_stuff<Key, Value>::table_stuff(size_t size) : m_count(0) {
 
 template <class Key, class Value>
 bool table_stuff<Key, Value>::is_empty() {
-	return m_table.size() == 0;
+	return m_table.empty();
 }
 
 template <class Key, class Value>
@@ -43,12 +43,12 @@ size_t table_stuff<Key, Value>::get_data_count() {
 }
 
 template <class Key, class Value>
-[[nodiscard]] auto table_stuff<Key, Value>::get_key() const -> const Key&{
+[[nodiscard]] const Key& table_stuff<Key, Value>::get_key() const {
 	return m_current_position->m_key;
 }
 
 template <class Key, class Value>
-[[nodiscard]] auto table_stuff<Key, Value>::get_value() const -> Value& {
+[[nodiscard]] Value& table_stuff<Key, Value>::get_value() const {
 	return m_current_position->m_value;
 }
 
@@ -58,8 +58,8 @@ void table_stuff<Key, Value>::reset() {
 }
 
 template <class Key, class Value>
-[[nodiscard]] auto table_stuff<Key, Value>::is_end() const -> bool {
-	return m_current_position == m_table.end() - 1;
+[[nodiscard]] bool table_stuff<Key, Value>::is_end() const {
+	return m_current_position == m_table.end();
 }
 
 template <class Key, class Value>

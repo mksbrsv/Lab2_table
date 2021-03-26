@@ -141,23 +141,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="data_value.h" />
     <ClInclude Include="exception_control.h" />
     <ClInclude Include="table.h" />
     <ClInclude Include="table_org.h" />
     <ClInclude Include="table_record.h" />
     <ClInclude Include="table_stuff.h" />
-    <ClInclude Include="tab_record.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="data_value.cpp" />
-    <ClCompile Include="exception_control.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="table.cpp" />
-    <ClCompile Include="table_org.cpp" />
-    <ClCompile Include="table_record.cpp" />
-    <ClCompile Include="table_stuff.cpp" />
-    <ClCompile Include="tab_record.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

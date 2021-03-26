@@ -1,13 +1,36 @@
 #ifndef TABLE_H
 #define TABLE_H
 #include "table_stuff.h"
+#include <initializer_list>
 template <class Key, class Value>
 class table : public table_stuff<Key, Value> {
+	using table_stuff<Key, Value>::reset;
+	using table_stuff<Key, Value>::is_end;
+	using table_stuff<Key, Value>::next;
+	using table_stuff<Key, Value>::m_table;
+	using table_stuff<Key, Value>::m_current_position;
+	using table_stuff<Key, Value>::m_count;
 public:
 	table(size_t size);
-	Value& find(const Key& key) const override;
+	table(std::initializer_list<table_element<Key, Value>>);
+	[[nodiscard]] Value& find(const Key& key) override;
 	void insert(const Key& key, const Value& value) override;
+	void insert(const Value& value) override;
 	void remove(const Key& key) override;
+	friend std::ofstream& operator<<(std::ofstream& out, table<Key, Value> tab) {
+		//out << "Key\tValue\n";
+		for (tab.reset(); !tab.is_end(); tab.next()) {
+			out << tab.m_current_position->m_key << "\t" << tab.m_current_position->m_value << "\n";
+		}
+		return out;
+	}
+	friend std::ostream& operator<<(std::ostream& out, table<Key, Value> tab) {
+		out << "Key\tValue\n";
+		for (tab.reset(); !tab.is_end(); tab.next()) {
+			out << tab.m_current_position->m_key << "\t" << tab.m_current_position->m_value << "\n";
+		}
+		return out;
+	}
 };
 
 template <class Key, class Value>
@@ -15,17 +38,45 @@ table<Key, Value>::table(size_t size) : table_stuff<Key, Value>(size) {
 }
 
 template <class Key, class Value>
-Value& table<Key, Value>::find(const Key& key) const {
-	
+table<Key, Value>::table(std::initializer_list<table_element<Key, Value>> list) : table_stuff<Key, Value>(list.size()) {
+	m_table = std::vector<table_element<Key, Value>>(list.begin(), list.end());
+	m_count = m_table.size();
+}
+
+template <class Key, class Value>
+[[nodiscard]] Value& table<Key, Value>::find(const Key& key) {
+	for (reset(); !is_end(); next()) {
+		if (m_current_position->m_key == key)
+			return m_current_position->m_value;
+	}
+	Value value;
+	return value;
 }
 
 template <class Key, class Value>
 void table<Key, Value>::insert(const Key& key, const Value& value) {
 	m_table.push_back(table_element<Key, Value>(key, value));
+	++m_count;
+
+}
+
+template <class Key, class Value>
+void table<Key, Value>::insert(const Value& value) {
+	m_table.push_back(table_element<Key, Value>(m_count + 1, value));
+	++m_count;
 }
 
 template <class Key, class Value>
 void table<Key, Value>::remove(const Key& key) {
+	int i = 0;
+	for (reset(); !is_end(); next(), i++) {
+		if (m_current_position->m_key == key) {
+			m_table.erase(m_table.begin() + i);
+			--m_count;
+			break;
+		}
+	}
+	reset();
 }
 
 #endif
