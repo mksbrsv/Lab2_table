@@ -2,6 +2,8 @@
 #define TABLE_ORG_H
 #include "data_value.h"
 #include <iostream>
+#include <vector>
+#include <initializer_list>
 template <class Key, class Value>
 class table_org {
 protected:
@@ -13,6 +15,8 @@ protected:
 	virtual const Value& find(const Key& key) = 0;
 	virtual void insert(const Key& key, const Value& value) = 0;
 	virtual void insert(const Value& value) = 0;
+	virtual void insert(const std::vector<Value>& values) = 0;
+	virtual void insert(const std::initializer_list<Value>& values) = 0;
 	virtual void remove(const Key& key) = 0;
 	virtual void reset() = 0;
 	virtual bool is_end() const = 0;
