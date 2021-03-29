@@ -11,10 +11,12 @@ class table : public table_stuff<Key, Value> {
 	using table_stuff<Key, Value>::m_current_position;
 	using table_stuff<Key, Value>::m_count;
 public:
-	table(size_t size);
+	explicit table(size_t size);
 	table(std::initializer_list<table_element<Key, Value>>);
 	table(const table& table);
-	table& operator=(const table<Key, Value>& table);
+	table& operator=(const table& table);
+	table(table&& table) noexcept;
+	table& operator=(table&& table) noexcept;
 	[[nodiscard]] Value& find(const Key& key) override;
 	void insert(const Key& key, const Value& value) override;
 	void insert(const Value& value) override;
@@ -58,13 +60,24 @@ table<Key, Value>& table<Key, Value>::operator=(const table<Key, Value>& table) 
 }
 
 template <class Key, class Value>
+table<Key, Value>::table(table&& table) noexcept : table_stuff<Key, Value>(table){
+}
+
+template <class Key, class Value>
+table<Key, Value>& table<Key, Value>::operator=(table&& table) noexcept {
+	std::swap(m_count, table.m_count);
+	std::swap(m_table, table.m_table);
+	std::swap(m_current_position, table.m_current_position);
+	return *this;
+}
+
+template <class Key, class Value>
 [[nodiscard]] Value& table<Key, Value>::find(const Key& key) {
 	for (reset(); !is_end(); next()) {
 		if (m_current_position->m_key == key)
 			return m_current_position->m_value;
 	}
-	Value value;
-	return value;
+	throw std::invalid_argument("This key doesn't exist");
 }
 
 template <class Key, class Value>
@@ -93,6 +106,7 @@ void table<Key, Value>::insert(const std::initializer_list<Value>& values) {
 	for(auto& x : values) {
 		insert(x);
 	}
+	m_current_position = m_table.begin() + values.size() - 1;
 }
 
 template <class Key, class Value>

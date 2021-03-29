@@ -10,8 +10,8 @@ int main() {
 	}
 	std::vector<std::string> vec(5, "a");
 	tab.insert(vec);
-	tab.insert({ "a", "b", "c", "ffuck" });
+	tab.insert({ "a", "b", "c", "fuck" });
 	file << tab;
-	tab.find(1) = "asdf";
+	tab.find(1) = "assad";
 	std::cout << tab;
 }

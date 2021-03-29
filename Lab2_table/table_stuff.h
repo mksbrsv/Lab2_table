@@ -6,8 +6,9 @@
 template <class Key, class Value>
 class table_stuff : public table_org<Key, Value> {
 public:
-	table_stuff(size_t size);
-	table_stuff(const table_stuff<Key, Value>& table);
+	explicit table_stuff(size_t size);
+	table_stuff(const table_stuff& table);
+	table_stuff(table_stuff&& table) noexcept;
 	bool is_empty() override;
 	bool is_full() override;
 	[[nodiscard]] size_t get_data_count() override;
@@ -16,6 +17,7 @@ public:
 	void reset() override;
 	[[nodiscard]] bool is_end() const override;
 	void next() override;
+	~table_stuff() = default;
 protected:
 	size_t m_count;
 	std::vector<table_element<Key, Value>> m_table;
@@ -30,6 +32,13 @@ table_stuff<Key, Value>::table_stuff(size_t size) : m_count(0) {
 
 template <class Key, class Value>
 table_stuff<Key, Value>::table_stuff(const table_stuff<Key, Value>& table) : m_count(table.m_count), m_table(table.m_table), m_current_position(m_table.begin()) {
+}
+
+template <class Key, class Value>
+table_stuff<Key, Value>::table_stuff(table_stuff&& table) noexcept : m_count(0), m_table(), m_current_position()  {
+	std::swap(m_count, table.m_count);
+	std::swap(m_table, table.m_table);
+	std::swap(m_current_position, table.m_current_position);
 }
 
 template <class Key, class Value>
