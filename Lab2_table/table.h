@@ -4,25 +4,25 @@
 #include <initializer_list>
 template <class Key, class Value>
 class table : public table_stuff<Key, Value> {
-	using table_stuff<Key, Value>::reset;
-	using table_stuff<Key, Value>::is_end;
-	using table_stuff<Key, Value>::next;
 	using table_stuff<Key, Value>::m_table;
 	using table_stuff<Key, Value>::m_current_position;
 	using table_stuff<Key, Value>::m_count;
 public:
+	using table_stuff<Key, Value>::reset;
+	using table_stuff<Key, Value>::is_end;
+	using table_stuff<Key, Value>::next;
 	explicit table(size_t size);
 	table(std::initializer_list<table_element<Key, Value>>);
 	table(const table& table);
 	table& operator=(const table& table);
 	table(table&& table) noexcept;
 	table& operator=(table&& table) noexcept;
-	[[nodiscard]] Value& find(const Key& key) override;
+	std::pair<bool, Value> find(const Key& key) override;
 	void insert(const Key& key, const Value& value) override;
 	void insert(const Value& value) override;
 	void insert(const std::vector<Value>& values) override;
 	void insert(const std::initializer_list<Value>& values) override;
-	void remove(const Key& key) override;
+	bool remove(const Key& key) override;
 	friend std::ofstream& operator<<(std::ofstream& out, table<Key, Value> tab) {
 		std::copy(tab.m_table.begin(), tab.m_table.end(), std::ostream_iterator<table_element<Key, Value>>(out, "\n"));
 		return out;
@@ -72,19 +72,25 @@ table<Key, Value>& table<Key, Value>::operator=(table&& table) noexcept {
 }
 
 template <class Key, class Value>
-[[nodiscard]] Value& table<Key, Value>::find(const Key& key) {
+std::pair<bool, Value> table<Key, Value>::find(const Key& key) {
 	for (reset(); !is_end(); next()) {
-		if (m_current_position->m_key == key)
-			return m_current_position->m_value;
+		if (m_current_position->m_key == key) {
+			Value val = m_current_position->m_value;
+			const bool suc = true;
+			return { suc, val };
+		}
 	}
-	throw std::invalid_argument("This key doesn't exist");
+	return { false, Value() };
 }
 
 template <class Key, class Value>
 void table<Key, Value>::insert(const Key& key, const Value& value) {
-	m_table.push_back(table_element<Key, Value>(key, value));
-	++m_count;
-
+	auto [success, val] = find(key);
+	if(!success) {
+		m_table.push_back(table_element<Key, Value>(key, value));
+		++m_count;
+		m_current_position = m_table.begin() + m_count;
+	}
 }
 
 template <class Key, class Value>
@@ -110,13 +116,16 @@ void table<Key, Value>::insert(const std::initializer_list<Value>& values) {
 }
 
 template <class Key, class Value>
-void table<Key, Value>::remove(const Key& key) {
+bool table<Key, Value>::remove(const Key& key) {
+	auto [success, value] = find(key);
+	if (!success)
+		return success;
 	int i = 0;
 	for (reset(); !is_end(); next(), i++) {
 		if (m_current_position->m_key == key) {
 			m_table.erase(m_table.begin() + i);
 			--m_count;
-			break;
+			return success;
 		}
 	}
 	reset();

@@ -30,9 +30,18 @@
     <ClInclude Include="table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="table_app.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="table_frame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="table_app.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="table_frame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
